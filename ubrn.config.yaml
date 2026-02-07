@@ -1,6 +1,7 @@
 ---
-crate:
-  manifest-path: ./rust/Cargo.toml
+rust:
+  directory: ./rust
+  manifestPath: Cargo.toml
 
 ios:
   targets:
@@ -9,6 +10,6 @@ ios:
 
 android:
   targets:
-    - aarch64-linux-android
-    - armv7-linux-androideabi
-    - x86_64-linux-android
+    - arm64-v8a
+    - armeabi-v7a
+    - x86_64

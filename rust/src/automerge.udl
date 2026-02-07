@@ -3,16 +3,16 @@ namespace automerge {
 };
 
 [Custom]
-typedef sequence<u8> ObjId;
+typedef bytes ObjId;
 
 [Custom]
-typedef sequence<u8> ChangeHash;
+typedef bytes ChangeHash;
 
 [Custom]
-typedef sequence<u8> ActorId;
+typedef bytes ActorId;
 
 [Custom]
-typedef sequence<u8> Cursor;
+typedef bytes Cursor;
 
 [Enum]
 interface Position {

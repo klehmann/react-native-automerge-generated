@@ -25,11 +25,15 @@
     "clean": "./scripts/clean.sh"
   },
   "devDependencies": {
-    "uniffi-bindgen-react-native": ">=0.29.0"
+    "uniffi-bindgen-react-native": "0.29.3-1"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": ">=0.76.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/klehmann/react-native-automerge-generated.git"
   },
   "codegenConfig": {
     "name": "RNAutomergeGeneratedSpec",
