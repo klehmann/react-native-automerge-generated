@@ -105,6 +105,8 @@ export function root(): ObjId {
 
 export type Change = {
   actorId: ActorId;
+  seq: /*u64*/ bigint;
+  startOp: /*u64*/ bigint;
   message: string | undefined;
   deps: Array<ChangeHash>;
   timestamp: /*i64*/ bigint;
@@ -146,6 +148,8 @@ const FfiConverterTypeChange = (() => {
     read(from: RustBuffer): TypeName {
       return {
         actorId: FfiConverterTypeActorId.read(from),
+        seq: FfiConverterUInt64.read(from),
+        startOp: FfiConverterUInt64.read(from),
         message: FfiConverterOptionalString.read(from),
         deps: FfiConverterArrayTypeChangeHash.read(from),
         timestamp: FfiConverterInt64.read(from),
@@ -155,6 +159,8 @@ const FfiConverterTypeChange = (() => {
     }
     write(value: TypeName, into: RustBuffer): void {
       FfiConverterTypeActorId.write(value.actorId, into);
+      FfiConverterUInt64.write(value.seq, into);
+      FfiConverterUInt64.write(value.startOp, into);
       FfiConverterOptionalString.write(value.message, into);
       FfiConverterArrayTypeChangeHash.write(value.deps, into);
       FfiConverterInt64.write(value.timestamp, into);
@@ -164,6 +170,8 @@ const FfiConverterTypeChange = (() => {
     allocationSize(value: TypeName): number {
       return (
         FfiConverterTypeActorId.allocationSize(value.actorId) +
+        FfiConverterUInt64.allocationSize(value.seq) +
+        FfiConverterUInt64.allocationSize(value.startOp) +
         FfiConverterOptionalString.allocationSize(value.message) +
         FfiConverterArrayTypeChangeHash.allocationSize(value.deps) +
         FfiConverterInt64.allocationSize(value.timestamp) +

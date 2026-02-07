@@ -1177,12 +1177,12 @@ const nativeApi = {
     return {
       hash: changeHashToHex(change.hash),
       actor: actorIdToHex(change.actorId),
-      seq: 0, // Not provided by native API
-      startOp: 0, // Not provided by native API
+      seq: change.seq,
+      startOp: change.startOp,
       time: change.timestamp,
       message: change.message || '',
       deps: change.deps.map((d: ChangeHash) => changeHashToHex(d)),
-      ops: [], // Not provided by native API
+      ops: [], // ops array not available from native API (would require decoding change bytes)
     };
   },
 

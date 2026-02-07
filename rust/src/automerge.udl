@@ -118,6 +118,8 @@ dictionary PathElement {
 
 dictionary Change {
     ActorId actor_id;
+    u64 seq;
+    u64 start_op;
     string? message;
     sequence<ChangeHash> deps;
     i64 timestamp;

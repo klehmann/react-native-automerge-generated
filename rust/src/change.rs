@@ -4,6 +4,8 @@ use crate::{ActorId, ChangeHash};
 
 pub struct Change {
     pub actor_id: ActorId,
+    pub seq: u64,
+    pub start_op: u64,
     pub message: Option<String>,
     pub deps: Vec<ChangeHash>,
     pub timestamp: i64,
@@ -15,6 +17,8 @@ impl From<am::Change> for Change {
     fn from(mut value: am::Change) -> Self {
         Change {
             actor_id: value.actor_id().into(),
+            seq: value.seq(),
+            start_op: value.start_op().get(),
             message: value.message().cloned(),
             deps: value.deps().into_iter().map(ChangeHash::from).collect(),
             timestamp: value.timestamp(),
