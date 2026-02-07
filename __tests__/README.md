@@ -2,7 +2,18 @@
 
 Comprehensive test suite for the native Automerge wrapper.
 
-## Prerequisites
+## ⚠️ Current Status
+
+The test suite is **currently blocked** by a Jest/TypeScript/ESM compatibility issue with `uniffi-bindgen-react-native`. The package exports TypeScript source files with ES modules, which Jest cannot easily transform in a Node.js environment.
+
+**Workaround options:**
+1. Run tests in a React Native environment (e.g., using Detox or similar)
+2. Create a mock implementation of the native bindings for Jest
+3. Use an integration test app (like mindoodb-test-app) for validation
+
+The test app at `/Users/klehmann/expo/mindoodb-test-app` successfully validates the native wrapper in a real React Native environment.
+
+## Prerequisites (when Jest support is fixed)
 
 The native module must be built before running tests:
 

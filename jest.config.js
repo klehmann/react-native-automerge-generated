@@ -16,6 +16,18 @@ module.exports = {
       tsconfig: {
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
+        moduleResolution: 'node16',
+        module: 'commonjs',
+        strict: false,
+      },
+    }],
+    'node_modules/(uniffi-bindgen-react-native)/.+\\.ts$': ['ts-jest', {
+      tsconfig: {
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+        moduleResolution: 'node16',
+        module: 'commonjs',
+        strict: false,
       },
     }],
   },
@@ -24,4 +36,8 @@ module.exports = {
     '^react-native$': '<rootDir>/node_modules/react-native',
   },
   setupFiles: ['<rootDir>/__tests__/setup.ts'],
+  // Transform node_modules that use ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!uniffi-bindgen-react-native)',
+  ],
 };

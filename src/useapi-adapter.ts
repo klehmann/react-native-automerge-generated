@@ -1225,6 +1225,13 @@ const nativeApi = {
   readBundle(): never {
     throw new Error('readBundle() not implemented in native adapter');
   },
+
+  wasmReleaseInfo() {
+    return {
+      backend: 'native-rust',
+      version: '0.7.3',
+    };
+  },
 };
 
 export { nativeApi, NativeAutomerge, NativeSyncState };
