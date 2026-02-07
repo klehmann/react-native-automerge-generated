@@ -50,7 +50,7 @@ Copied from `github.com/automerge/automerge-swift/rust/src/` and adapted:
 - Updated `Cargo.toml`: uniffi 0.28.2 -> 0.29.3, removed `features = ["wasm"]`, added `"cdylib"` crate-type
 - Copied as-is: `doc.rs`, `sync_state.rs`, `value.rs`, `scalar_value.rs`, `patches.rs`, `mark.rs`, `obj_type.rs`, `path.rs`, `change.rs`, `text_encoding.rs`, `automerge.udl`, `lib.rs`
 
-## Phase 3: Generate React Native Turbo Module [TODO]
+## Phase 3: Generate React Native Turbo Module [DONE]
 
 ### 3.1 Install ubrn CLI
 ```bash
@@ -67,9 +67,9 @@ ubrn build ios --config ubrn.config.yaml --and-generate
 ubrn build android --config ubrn.config.yaml --and-generate
 ```
 
-## Phase 4: Write the UseApi() adapter [TODO]
+## Phase 4: Write the UseApi() adapter [DONE]
 
-See `src/useapi-adapter.ts` for the API shape and TODOs.
+See `src/useapi-adapter.ts` — full implementation of NativeAutomerge class + nativeApi object.
 
 ## Phase 5: Integration testing [TODO]
 
