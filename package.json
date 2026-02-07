@@ -13,10 +13,16 @@
     "cpp",
     "ios",
     "android",
+    "rust",
+    "scripts",
+    "ubrn.config.yaml",
     "*.podspec",
     "!ios/build",
     "!android/build",
-    "!**/__tests__"
+    "!android/src/main/jniLibs",
+    "!rust/target",
+    "!**/__tests__",
+    "!**/*.log"
   ],
   "scripts": {
     "check": "./scripts/build-check.sh",
