@@ -1,0 +1,42 @@
+{
+  "name": "react-native-automerge-generated",
+  "version": "0.1.0",
+  "description": "Native Automerge bindings for React Native via UniFFI",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/src/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "files": [
+    "src",
+    "lib",
+    "cpp",
+    "ios",
+    "android",
+    "*.podspec",
+    "!ios/build",
+    "!android/build",
+    "!**/__tests__"
+  ],
+  "scripts": {
+    "check": "./scripts/build-check.sh",
+    "build:ios": "./scripts/build-ios.sh",
+    "build:android": "./scripts/build-android.sh",
+    "clean": "./scripts/clean.sh"
+  },
+  "devDependencies": {
+    "uniffi-bindgen-react-native": ">=0.29.0"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": ">=0.76.0"
+  },
+  "codegenConfig": {
+    "name": "RNAutomergeGeneratedSpec",
+    "type": "all",
+    "jsSrcsDir": "src",
+    "android": {
+      "javaPackageName": "com.mindoo.automerge"
+    }
+  }
+}
