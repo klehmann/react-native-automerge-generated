@@ -188,4 +188,4 @@ See [__tests__/README.md](./__tests__/README.md) for detailed test documentation
 
 ## License
 
-MIT
+Apache 2.0
