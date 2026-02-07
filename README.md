@@ -154,6 +154,38 @@ export { nativeApi, NativeAutomerge, NativeSyncState } from './useapi-adapter';
 
 This runs automatically after `npm run build:ios` or `npm run build:android`.
 
+## Testing
+
+The package includes a comprehensive test suite with 40+ test cases covering all major Automerge operations.
+
+```bash
+# Install dependencies
+npm install
+
+# Build the native module first (required)
+npm run build:ios  # or build:android
+
+# Run tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm test -- --coverage
+```
+
+Test coverage includes:
+- Document creation, cloning, and manipulation
+- Map, List, Text, and Counter operations
+- Save/load persistence
+- Merge operations and conflict resolution
+- Change history and decodeChange()
+- Sync protocol
+- Complex nested structures
+
+See [__tests__/README.md](./__tests__/README.md) for detailed test documentation.
+
 ## License
 
 MIT
