@@ -1,5 +1,7 @@
 namespace automerge {
     ObjId root();
+    [Throws=DecodeChangeError]
+    Change decode_change(bytes data);
 };
 
 [Custom]
@@ -64,6 +66,11 @@ enum ReceiveSyncError {
 
 [Error]
 enum DecodeSyncStateError {
+    "Internal",
+};
+
+[Error]
+enum DecodeChangeError {
     "Internal",
 };
 
@@ -173,12 +180,12 @@ interface Doc {
     ObjId insert_object_in_list(ObjId obj, u64 index, ObjType obj_type);
 
     [Throws=DocError]
-    void splice_text(ObjId obj, u64 start, i64 delete, string chars);
+    void splice_text(ObjId obj, u64 start, i64 del_count, string chars);
     [Throws=DocError]
     void update_text(ObjId obj, string chars);
 
     [Throws=DocError]
-    void splice(ObjId obj, u64 start, i64 delete, sequence<ScalarValue> values);
+    void splice(ObjId obj, u64 start, i64 del_count, sequence<ScalarValue> values);
 
     [Throws=DocError]
     void mark(ObjId obj, u64 start, u64 end, ExpandMark expand, string name, ScalarValue value);
@@ -280,6 +287,9 @@ interface Doc {
     void apply_encoded_changes(sequence<u8> changes);
     [Throws=DocError]
     sequence<Patch> apply_encoded_changes_with_patches(sequence<u8> changes);
+
+    u64 pending_ops();
+    u64 rollback();
 
     [Throws=DocError]
     Cursor cursor(ObjId obj, u64 position);

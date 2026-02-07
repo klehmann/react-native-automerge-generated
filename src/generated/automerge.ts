@@ -74,6 +74,22 @@ const uniffiIsDebug =
   false;
 // Public interface members begin here.
 
+export function decodeChange(data: ArrayBuffer): Change /*throws*/ {
+  return FfiConverterTypeChange.lift(
+    uniffiCaller.rustCallWithError(
+      /*liftError:*/ FfiConverterTypeDecodeChangeError.lift.bind(
+        FfiConverterTypeDecodeChangeError,
+      ),
+      /*caller:*/ (callStatus) => {
+        return nativeModule().ubrn_uniffi_uniffi_automerge_fn_func_decode_change(
+          FfiConverterArrayBuffer.lower(data),
+          callStatus,
+        );
+      },
+      /*liftString:*/ FfiConverterString.lift,
+    ),
+  );
+}
 export function root(): ObjId {
   return FfiConverterTypeObjId.lift(
     uniffiCaller.rustCall(
@@ -449,6 +465,75 @@ const FfiConverterTypeCursor = FfiConverterArrayBuffer;
 export type ObjId = ArrayBuffer;
 // FfiConverter for ObjId, a type alias for ArrayBuffer.
 const FfiConverterTypeObjId = FfiConverterArrayBuffer;
+
+// Flat error type: DecodeChangeError
+export enum DecodeChangeError_Tags {
+  Internal = "Internal",
+}
+export const DecodeChangeError = (() => {
+  class Internal extends UniffiError {
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [uniffiTypeNameSymbol]: string = "DecodeChangeError";
+    /**
+     * @private
+     * This field is private and should not be used.
+     */
+    readonly [variantOrdinalSymbol] = 1;
+
+    public readonly tag = DecodeChangeError_Tags.Internal;
+
+    constructor(message: string) {
+      super("DecodeChangeError", "Internal", message);
+    }
+
+    static instanceOf(e: any): e is Internal {
+      return instanceOf(e) && (e as any)[variantOrdinalSymbol] === 1;
+    }
+  }
+
+  // Utility function which does not rely on instanceof.
+  function instanceOf(e: any): e is DecodeChangeError {
+    return (e as any)[uniffiTypeNameSymbol] === "DecodeChangeError";
+  }
+  return {
+    Internal,
+    instanceOf,
+  };
+})();
+
+// Union type for DecodeChangeError error type.
+
+export type DecodeChangeError = InstanceType<
+  (typeof DecodeChangeError)[keyof Omit<typeof DecodeChangeError, "instanceOf">]
+>;
+
+const FfiConverterTypeDecodeChangeError = (() => {
+  const intConverter = FfiConverterInt32;
+  type TypeName = DecodeChangeError;
+  class FfiConverter extends AbstractFfiConverterByteArray<TypeName> {
+    read(from: RustBuffer): TypeName {
+      switch (intConverter.read(from)) {
+        case 1:
+          return new DecodeChangeError.Internal(FfiConverterString.read(from));
+
+        default:
+          throw new UniffiInternalError.UnexpectedEnumCase();
+      }
+    }
+    write(value: TypeName, into: RustBuffer): void {
+      const obj = value as any;
+      const index = obj[variantOrdinalSymbol] as number;
+      intConverter.write(index, into);
+    }
+    allocationSize(value: TypeName): number {
+      return intConverter.allocationSize(0);
+    }
+  }
+  return new FfiConverter();
+})();
 
 // Flat error type: DecodeSyncStateError
 export enum DecodeSyncStateError_Tags {
@@ -2415,6 +2500,7 @@ export interface DocInterface {
   mergeWithPatches(other: DocInterface) /*throws*/ : Array<Patch>;
   objectType(obj: ObjId): ObjType;
   path(obj: ObjId) /*throws*/ : Array<PathElement>;
+  pendingOps(): /*u64*/ bigint;
   putInList(
     obj: ObjId,
     index: /*u64*/ bigint,
@@ -2435,18 +2521,19 @@ export interface DocInterface {
     state: SyncStateInterface,
     msg: Array</*u8*/ number>,
   ) /*throws*/ : Array<Patch>;
+  rollback(): /*u64*/ bigint;
   save(): Array</*u8*/ number>;
   setActor(actor: ActorId): void;
   splice(
     obj: ObjId,
     start: /*u64*/ bigint,
-    delete_: /*i64*/ bigint,
+    delCount: /*i64*/ bigint,
     values: Array<ScalarValue>,
   ) /*throws*/ : void;
   spliceText(
     obj: ObjId,
     start: /*u64*/ bigint,
-    delete_: /*i64*/ bigint,
+    delCount: /*i64*/ bigint,
     chars: string,
   ) /*throws*/ : void;
   splitBlock(obj: ObjId, index: /*u32*/ number) /*throws*/ : ObjId;
@@ -3393,6 +3480,20 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
     );
   }
 
+  public pendingOps(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_uniffi_automerge_fn_method_doc_pending_ops(
+            uniffiTypeDocObjectFactory.clonePointer(this),
+            callStatus,
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift,
+      ),
+    );
+  }
+
   public putInList(
     obj: ObjId,
     index: /*u64*/ bigint,
@@ -3527,6 +3628,20 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
     );
   }
 
+  public rollback(): /*u64*/ bigint {
+    return FfiConverterUInt64.lift(
+      uniffiCaller.rustCall(
+        /*caller:*/ (callStatus) => {
+          return nativeModule().ubrn_uniffi_uniffi_automerge_fn_method_doc_rollback(
+            uniffiTypeDocObjectFactory.clonePointer(this),
+            callStatus,
+          );
+        },
+        /*liftString:*/ FfiConverterString.lift,
+      ),
+    );
+  }
+
   public save(): Array</*u8*/ number> {
     return FfiConverterArrayUInt8.lift(
       uniffiCaller.rustCall(
@@ -3557,7 +3672,7 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
   public splice(
     obj: ObjId,
     start: /*u64*/ bigint,
-    delete_: /*i64*/ bigint,
+    delCount: /*i64*/ bigint,
     values: Array<ScalarValue>,
   ): void /*throws*/ {
     uniffiCaller.rustCallWithError(
@@ -3569,7 +3684,7 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
           uniffiTypeDocObjectFactory.clonePointer(this),
           FfiConverterTypeObjId.lower(obj),
           FfiConverterUInt64.lower(start),
-          FfiConverterInt64.lower(delete_),
+          FfiConverterInt64.lower(delCount),
           FfiConverterArrayTypeScalarValue.lower(values),
           callStatus,
         );
@@ -3581,7 +3696,7 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
   public spliceText(
     obj: ObjId,
     start: /*u64*/ bigint,
-    delete_: /*i64*/ bigint,
+    delCount: /*i64*/ bigint,
     chars: string,
   ): void /*throws*/ {
     uniffiCaller.rustCallWithError(
@@ -3593,7 +3708,7 @@ export class Doc extends UniffiAbstractObject implements DocInterface {
           uniffiTypeDocObjectFactory.clonePointer(this),
           FfiConverterTypeObjId.lower(obj),
           FfiConverterUInt64.lower(start),
-          FfiConverterInt64.lower(delete_),
+          FfiConverterInt64.lower(delCount),
           FfiConverterString.lower(chars),
           callStatus,
         );
@@ -4071,6 +4186,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_uniffi_automerge_checksum_func_decode_change() !==
+    48322
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      "uniffi_uniffi_automerge_checksum_func_decode_change",
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_uniffi_automerge_checksum_func_root() !== 16665
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
@@ -4446,6 +4569,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_pending_ops() !==
+    46263
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      "uniffi_uniffi_automerge_checksum_method_doc_pending_ops",
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_in_list() !==
     64209
   ) {
@@ -4494,6 +4625,14 @@ function uniffiEnsureInitialized() {
     );
   }
   if (
+    nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_rollback() !==
+    7206
+  ) {
+    throw new UniffiInternalError.ApiChecksumMismatch(
+      "uniffi_uniffi_automerge_checksum_method_doc_rollback",
+    );
+  }
+  if (
     nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_save() !==
     20308
   ) {
@@ -4511,7 +4650,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_splice() !==
-    46357
+    14674
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       "uniffi_uniffi_automerge_checksum_method_doc_splice",
@@ -4519,7 +4658,7 @@ function uniffiEnsureInitialized() {
   }
   if (
     nativeModule().ubrn_uniffi_uniffi_automerge_checksum_method_doc_splice_text() !==
-    63165
+    47526
   ) {
     throw new UniffiInternalError.ApiChecksumMismatch(
       "uniffi_uniffi_automerge_checksum_method_doc_splice_text",
@@ -4662,6 +4801,7 @@ export default Object.freeze({
     FfiConverterTypeChange,
     FfiConverterTypeChangeHash,
     FfiConverterTypeCursor,
+    FfiConverterTypeDecodeChangeError,
     FfiConverterTypeDecodeSyncStateError,
     FfiConverterTypeDoc,
     FfiConverterTypeDocError,

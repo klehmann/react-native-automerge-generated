@@ -18,6 +18,9 @@ rustup target add aarch64-apple-ios aarch64-apple-ios-sim 2>/dev/null || true
 cd "$PROJECT_DIR"
 npx ubrn build ios --config ubrn.config.yaml --and-generate "$@"
 
+# Add UseApi export to index.ts
+"$SCRIPT_DIR/add-useapi-export.sh"
+
 echo ""
 echo "iOS build complete. Generated files:"
 echo "  - src/generated/"

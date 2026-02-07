@@ -348,6 +348,14 @@ impl Doc {
         doc.object_type(obj).unwrap().into()
     }
 
+    pub fn pending_ops(&self) -> u64 {
+        self.0.read().unwrap().pending_ops() as u64
+    }
+
+    pub fn rollback(&self) -> u64 {
+        self.0.write().unwrap().rollback() as u64
+    }
+
     pub fn cursor(&self, obj: ObjId, position: u64) -> Result<Cursor, DocError> {
         let obj = am::ObjId::from(obj);
         let doc = self.0.read().unwrap();
@@ -432,13 +440,13 @@ impl Doc {
         &self,
         obj: ObjId,
         start: u64,
-        delete: i64,
+        del_count: i64,
         value: String,
     ) -> Result<(), DocError> {
         let obj = am::ObjId::from(obj);
         let mut doc = self.0.write().unwrap();
         assert_text(&*doc, &obj)?;
-        doc.splice_text(&obj, start as usize, delete as isize, value.as_str())?;
+        doc.splice_text(&obj, start as usize, del_count as isize, value.as_str())?;
         Ok(())
     }
 
@@ -454,7 +462,7 @@ impl Doc {
         &self,
         obj: ObjId,
         start: u64,
-        delete: i64,
+        del_count: i64,
         values: Vec<ScalarValue>,
     ) -> Result<(), DocError> {
         let obj = am::ObjId::from(obj);
@@ -463,7 +471,7 @@ impl Doc {
         doc.splice(
             &obj,
             start as usize,
-            delete as isize,
+            del_count as isize,
             values.into_iter().map(|i| i.into()),
         )?;
         Ok(())

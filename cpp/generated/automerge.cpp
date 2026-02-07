@@ -422,6 +422,10 @@ extern "C" {
         RustBuffer obj, 
         RustCallStatus *uniffi_out_err
     );
+    uint64_t uniffi_uniffi_automerge_fn_method_doc_pending_ops(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
     void uniffi_uniffi_automerge_fn_method_doc_put_in_list(
         void * ptr, 
         RustBuffer obj, 
@@ -462,6 +466,10 @@ extern "C" {
         RustBuffer msg, 
         RustCallStatus *uniffi_out_err
     );
+    uint64_t uniffi_uniffi_automerge_fn_method_doc_rollback(
+        void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
     RustBuffer uniffi_uniffi_automerge_fn_method_doc_save(
         void * ptr, 
         RustCallStatus *uniffi_out_err
@@ -475,7 +483,7 @@ extern "C" {
         void * ptr, 
         RustBuffer obj, 
         uint64_t start, 
-        int64_t delete, 
+        int64_t del_count, 
         RustBuffer values, 
         RustCallStatus *uniffi_out_err
     );
@@ -483,7 +491,7 @@ extern "C" {
         void * ptr, 
         RustBuffer obj, 
         uint64_t start, 
-        int64_t delete, 
+        int64_t del_count, 
         RustBuffer chars, 
         RustCallStatus *uniffi_out_err
     );
@@ -549,6 +557,10 @@ extern "C" {
     );
     RustBuffer uniffi_uniffi_automerge_fn_method_syncstate_their_heads(
         void * ptr, 
+        RustCallStatus *uniffi_out_err
+    );
+    RustBuffer uniffi_uniffi_automerge_fn_func_decode_change(
+        RustBuffer data, 
         RustCallStatus *uniffi_out_err
     );
     RustBuffer uniffi_uniffi_automerge_fn_func_root(RustCallStatus *uniffi_out_err
@@ -765,6 +777,8 @@ extern "C" {
         /*handle*/ uint64_t handle, 
         RustCallStatus *uniffi_out_err
     );
+    uint16_t uniffi_uniffi_automerge_checksum_func_decode_change(
+    );
     uint16_t uniffi_uniffi_automerge_checksum_func_root(
     );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_actor_id(
@@ -859,6 +873,8 @@ extern "C" {
     );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_path(
     );
+    uint16_t uniffi_uniffi_automerge_checksum_method_doc_pending_ops(
+    );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_put_in_list(
     );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_put_in_map(
@@ -870,6 +886,8 @@ extern "C" {
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message(
     );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message_with_patches(
+    );
+    uint16_t uniffi_uniffi_automerge_checksum_method_doc_rollback(
     );
     uint16_t uniffi_uniffi_automerge_checksum_method_doc_save(
     );
@@ -2871,6 +2889,14 @@ NativeAutomerge::NativeAutomerge(
             return this->cpp_uniffi_uniffi_automerge_fn_method_doc_path(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_uniffi_automerge_fn_method_doc_pending_ops"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_fn_method_doc_pending_ops"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_fn_method_doc_pending_ops(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_uniffi_automerge_fn_method_doc_put_in_list"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_fn_method_doc_put_in_list"),
@@ -2917,6 +2943,14 @@ NativeAutomerge::NativeAutomerge(
         3,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_uniffi_automerge_fn_method_doc_receive_sync_message_with_patches(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_uniffi_automerge_fn_method_doc_rollback"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_fn_method_doc_rollback"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_fn_method_doc_rollback(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_uniffi_automerge_fn_method_doc_save"] = jsi::Function::createFromHostFunction(
@@ -3063,12 +3097,28 @@ NativeAutomerge::NativeAutomerge(
             return this->cpp_uniffi_uniffi_automerge_fn_method_syncstate_their_heads(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_uniffi_automerge_fn_func_decode_change"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_fn_func_decode_change"),
+        1,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_fn_func_decode_change(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_uniffi_automerge_fn_func_root"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_fn_func_root"),
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_uniffi_automerge_fn_func_root(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_uniffi_automerge_checksum_func_decode_change"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_checksum_func_decode_change"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_checksum_func_decode_change(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_uniffi_automerge_checksum_func_root"] = jsi::Function::createFromHostFunction(
@@ -3447,6 +3497,14 @@ NativeAutomerge::NativeAutomerge(
             return this->cpp_uniffi_uniffi_automerge_checksum_method_doc_path(rt, thisVal, args, count);
         }
     );
+    props["ubrn_uniffi_uniffi_automerge_checksum_method_doc_pending_ops"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_checksum_method_doc_pending_ops"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_checksum_method_doc_pending_ops(rt, thisVal, args, count);
+        }
+    );
     props["ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_in_list"] = jsi::Function::createFromHostFunction(
         rt,
         jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_in_list"),
@@ -3493,6 +3551,14 @@ NativeAutomerge::NativeAutomerge(
         0,
         [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
             return this->cpp_uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message_with_patches(rt, thisVal, args, count);
+        }
+    );
+    props["ubrn_uniffi_uniffi_automerge_checksum_method_doc_rollback"] = jsi::Function::createFromHostFunction(
+        rt,
+        jsi::PropNameID::forAscii(rt, "ubrn_uniffi_uniffi_automerge_checksum_method_doc_rollback"),
+        0,
+        [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) -> jsi::Value {
+            return this->cpp_uniffi_uniffi_automerge_checksum_method_doc_rollback(rt, thisVal, args, count);
         }
     );
     props["ubrn_uniffi_uniffi_automerge_checksum_method_doc_save"] = jsi::Function::createFromHostFunction(
@@ -4273,6 +4339,16 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_path(jsi::
         
         return uniffi::automerge::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_pending_ops(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_uniffi_automerge_fn_method_doc_pending_ops(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::automerge::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_put_in_list(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
         uniffi_uniffi_automerge_fn_method_doc_put_in_list(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), uniffi::automerge::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[1]), uniffi_jsi::Bridging<uint64_t>::fromJs(rt, callInvoker, args[2]), uniffi::automerge::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[3]), 
@@ -4332,6 +4408,16 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_receive_sy
 
         
         return uniffi::automerge::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_rollback(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_uniffi_automerge_fn_method_doc_rollback(uniffi_jsi::Bridging<void *>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::automerge::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi_jsi::Bridging<uint64_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_doc_save(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
@@ -4512,6 +4598,16 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_method_syncstate_thei
         
         return uniffi::automerge::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_func_decode_change(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
+        auto value = uniffi_uniffi_automerge_fn_func_decode_change(uniffi::automerge::Bridging<RustBuffer>::fromJs(rt, callInvoker, args[0]), 
+            &status
+        );
+        uniffi::automerge::Bridging<RustCallStatus>::copyIntoJs(rt, callInvoker, status, args[count - 1]);
+
+        
+        return uniffi::automerge::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_func_root(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         RustCallStatus status = uniffi::automerge::Bridging<RustCallStatus>::rustSuccess(rt);
         auto value = uniffi_uniffi_automerge_fn_func_root(&status
@@ -4520,6 +4616,13 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_fn_func_root(jsi::Runtim
 
         
         return uniffi::automerge::Bridging<RustBuffer>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_func_decode_change(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_uniffi_automerge_checksum_func_decode_change(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_func_root(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_uniffi_automerge_checksum_func_root(
@@ -4850,6 +4953,13 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_path
         
         return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
 }
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_pending_ops(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_uniffi_automerge_checksum_method_doc_pending_ops(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_put_in_list(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_uniffi_automerge_checksum_method_doc_put_in_list(
         );
@@ -4887,6 +4997,13 @@ jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_rece
 }
 jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message_with_patches(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
         auto value = uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message_with_patches(
+        );
+
+        
+        return uniffi_jsi::Bridging<uint16_t>::toJs(rt, callInvoker, value);
+}
+jsi::Value NativeAutomerge::cpp_uniffi_uniffi_automerge_checksum_method_doc_rollback(jsi::Runtime& rt, const jsi::Value& thisVal, const jsi::Value* args, size_t count) {
+        auto value = uniffi_uniffi_automerge_checksum_method_doc_rollback(
         );
 
         

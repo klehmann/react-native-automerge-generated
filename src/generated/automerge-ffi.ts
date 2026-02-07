@@ -313,6 +313,10 @@ interface NativeModuleInterface {
     obj: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus,
   ): Uint8Array;
+  ubrn_uniffi_uniffi_automerge_fn_method_doc_pending_ops(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus,
+  ): bigint;
   ubrn_uniffi_uniffi_automerge_fn_method_doc_put_in_list(
     ptr: bigint,
     obj: Uint8Array,
@@ -353,6 +357,10 @@ interface NativeModuleInterface {
     msg: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus,
   ): Uint8Array;
+  ubrn_uniffi_uniffi_automerge_fn_method_doc_rollback(
+    ptr: bigint,
+    uniffi_out_err: UniffiRustCallStatus,
+  ): bigint;
   ubrn_uniffi_uniffi_automerge_fn_method_doc_save(
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus,
@@ -366,7 +374,7 @@ interface NativeModuleInterface {
     ptr: bigint,
     obj: Uint8Array,
     start: bigint,
-    delete_: bigint,
+    delCount: bigint,
     values: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus,
   ): void;
@@ -374,7 +382,7 @@ interface NativeModuleInterface {
     ptr: bigint,
     obj: Uint8Array,
     start: bigint,
-    delete_: bigint,
+    delCount: bigint,
     chars: Uint8Array,
     uniffi_out_err: UniffiRustCallStatus,
   ): void;
@@ -443,9 +451,14 @@ interface NativeModuleInterface {
     ptr: bigint,
     uniffi_out_err: UniffiRustCallStatus,
   ): Uint8Array;
+  ubrn_uniffi_uniffi_automerge_fn_func_decode_change(
+    data: Uint8Array,
+    uniffi_out_err: UniffiRustCallStatus,
+  ): Uint8Array;
   ubrn_uniffi_uniffi_automerge_fn_func_root(
     uniffi_out_err: UniffiRustCallStatus,
   ): Uint8Array;
+  ubrn_uniffi_uniffi_automerge_checksum_func_decode_change(): number;
   ubrn_uniffi_uniffi_automerge_checksum_func_root(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_actor_id(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_apply_encoded_changes(): number;
@@ -493,12 +506,14 @@ interface NativeModuleInterface {
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_merge_with_patches(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_object_type(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_path(): number;
+  ubrn_uniffi_uniffi_automerge_checksum_method_doc_pending_ops(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_in_list(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_in_map(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_object_in_list(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_put_object_in_map(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_receive_sync_message_with_patches(): number;
+  ubrn_uniffi_uniffi_automerge_checksum_method_doc_rollback(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_save(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_set_actor(): number;
   ubrn_uniffi_uniffi_automerge_checksum_method_doc_splice(): number;

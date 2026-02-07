@@ -34,6 +34,10 @@ export async function uniffiInitAsync() {
   // NOOP.
 }
 
+// Export the UseApi adapter for native Automerge integration
+export { nativeApi, NativeAutomerge, NativeSyncState } from './useapi-adapter';
+
+
 // Export the crates as individually namespaced objects.
 export default {
   automerge,
