@@ -820,9 +820,16 @@ class NativeAutomerge {
   }
 
   getLastLocalChange(): Uint8Array | undefined {
-    const bytes = this.doc.encodeNewChanges();
-    if (bytes.length === 0) return undefined;
-    return numberArrayToUint8Array(bytes);
+    const heads = this.doc.heads();
+    if (heads.length === 0) return undefined;
+
+    // Get the most recent change (last head in the array)
+    const lastHead = heads[heads.length - 1];
+    const change = this.doc.changeByHash(lastHead);
+    if (!change) return undefined;
+
+    // Return the bytes for this single change (can be decoded with decodeChange)
+    return numberArrayToUint8Array(change.bytes);
   }
 
   getMissingDeps(): string[] {
