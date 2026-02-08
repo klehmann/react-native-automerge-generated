@@ -766,20 +766,16 @@ class NativeAutomerge {
   // --- Materialization ---
 
   materialize(obj?: string, heads?: string[], meta?: any): any {
-    console.log('[NativeAutomerge.materialize] obj:', obj, 'meta:', meta ? 'present' : 'undefined', 'meta.handle:', meta?.handle ? 'present' : 'undefined', 'meta.freeze:', meta?.freeze);
     const objStr = (!obj || obj === '/') ? '_root' : obj;
     const objId = strToObjId(objStr);
     const result = this._materializeObj(objId, objStr, heads, meta);
-    console.log('[NativeAutomerge.materialize] result:', typeof result, 'STATE symbol:', result[Symbol.for('_am_meta')] ? 'present' : 'missing', 'OBJECT_ID:', result[Symbol.for('_am_objectId')], 'frozen:', Object.isFrozen(result));
     return result;
   }
 
   private _materializeObj(objId: ObjId, objStr: string, heads?: string[], meta?: any): any {
     const ot = this.doc.objectType(objId);
-    console.log('[_materializeObj] objStr:', objStr, 'objType:', ot, 'ObjType.Text:', ObjType.Text, 'ObjType.Map:', ObjType.Map, 'ObjType.List:', ObjType.List);
     if (ot === ObjType.Text) {
       const textContent = heads && heads.length > 0 ? this.doc.textAt(objId, hexToHeads(heads)) : this.doc.text(objId);
-      console.log('[_materializeObj] TEXT OBJECT! objStr:', objStr, 'content:', textContent);
       return textContent;
     }
     if (ot === ObjType.Map) {
@@ -801,9 +797,7 @@ class NativeAutomerge {
         if (val.tag === Value_Tags.Object) {
           const inner = val.inner as { typ: ObjType; id: ObjId };
           const childStr = objIdToStr(inner.id);
-          console.log('[_materializeObj Map] key:', key, 'is Object, typ:', inner.typ, 'id:', childStr, 'recursing...');
           result[key] = this._materializeObj(inner.id, childStr, heads, meta);
-          console.log('[_materializeObj Map] key:', key, 'result:', result[key]);
         } else {
           const inner = val.inner as { value: ScalarValue };
           result[key] = scalarValueToJS(inner.value);
@@ -1185,12 +1179,8 @@ function applyPatchesToObject(obj: any, patches: any[], meta?: any): any {
   }
 
   // Ensure metadata is attached to the root object after applying patches
-  console.log('[applyPatchesToObject] patches.length:', patches.length, 'meta:', meta ? 'present' : 'undefined', 'meta.handle:', meta?.handle ? 'present' : 'undefined');
   if (meta && meta.handle) {
     attachMeta(obj, '_root', meta);
-    console.log('[applyPatchesToObject] attachMeta called, STATE symbol now:', obj[Symbol.for('_am_meta')] ? 'present' : 'missing');
-  } else {
-    console.log('[applyPatchesToObject] NOT calling attachMeta - no meta or no meta.handle');
   }
 
   return obj;
