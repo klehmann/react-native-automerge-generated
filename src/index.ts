@@ -35,7 +35,8 @@ export async function uniffiInitAsync() {
 }
 
 // Export the UseApi adapter for native Automerge integration
-export { nativeApi, NativeAutomerge, NativeSyncState } from './useapi-adapter';
+// IMPORTANT: Automerge export provides WASM-compatible API - do not remove!
+export { nativeApi, NativeAutomerge, NativeSyncState, Automerge } from './useapi-adapter';
 
 
 // Export the crates as individually namespaced objects.

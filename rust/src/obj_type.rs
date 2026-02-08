@@ -1,6 +1,7 @@
 use automerge as am;
 
 #[derive(Copy, Clone)]
+#[derive(Debug)]
 pub enum ObjType {
     Map,
     List,

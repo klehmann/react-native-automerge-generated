@@ -72,10 +72,13 @@ impl Doc {
     }
 
     pub fn put_in_map(&self, obj: ObjId, key: String, value: ScalarValue) -> Result<(), DocError> {
+        eprintln!("[Rust put_in_map] key={}, value={:?}", key, value);
         let obj = am::ObjId::from(obj);
+        let am_value: am::ScalarValue = value.into();
+        eprintln!("[Rust put_in_map] converted to am::ScalarValue: {:?}", am_value);
         let mut doc = self.0.write().unwrap();
         assert_map(&*doc, &obj)?;
-        doc.put(obj, key, value).map_err(|e| e.into())
+        doc.put(obj, key, am_value).map_err(|e| e.into())
     }
 
     pub fn put_object_in_map(
@@ -168,7 +171,15 @@ impl Doc {
         let obj = am::ObjId::from(obj);
         let doc = self.0.read().unwrap();
         assert_map(&*doc, &obj)?;
-        Ok(doc.get(obj, key)?.map(|v| v.into()))
+        let result = doc.get(obj.clone(), key.clone())?;
+        if let Some((am_val, obj_id)) = &result {
+            eprintln!("[Rust get_in_map] key={}, am_val={:?}, obj_id={:?}", key, am_val, obj_id);
+        }
+        Ok(result.map(|v| {
+            let our_val: Value = v.into();
+            eprintln!("[Rust get_in_map] converted to our Value: {:?}", our_val);
+            our_val
+        }))
     }
 
     pub fn get_in_list(&self, obj: ObjId, idx: u64) -> Result<Option<Value>, DocError> {

@@ -2,6 +2,7 @@ use automerge as am;
 
 use crate::{ObjId, ObjType, ScalarValue};
 
+#[derive(Debug)]
 pub enum Value {
     Object { typ: ObjType, id: ObjId },
     Scalar { value: ScalarValue },

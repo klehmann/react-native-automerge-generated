@@ -1,5 +1,6 @@
 use automerge as am;
 
+#[derive(Debug)]
 pub enum ScalarValue {
     Bytes { value: Vec<u8> },
     String { value: String },

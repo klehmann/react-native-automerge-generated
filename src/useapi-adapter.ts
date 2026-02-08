@@ -35,6 +35,7 @@ import {
   type PathElement,
   type KeyValue,
 } from './generated/automerge';
+import { createRootProxy, createReadableDoc } from './proxy';
 
 // =============================================================================
 // Base64 encoding/decoding (no external dependency)
@@ -402,6 +403,53 @@ class NativeAutomerge {
     // Let GC handle Rust Arc cleanup via uniffiDestroy
   }
 
+  // --- High-level API ---
+
+  /**
+   * Make changes to the document using a proxy-based API (WASM-compatible)
+   * @param optionsOrCallback - Either a callback function or options object
+   * @param callback - The callback function if options were provided
+   * @returns The modified document (modifies in place)
+   */
+  change(optionsOrCallback: any, callback?: any): NativeAutomerge {
+    // Parse arguments (WASM API allows message as string or options object)
+    let changeFn: Function;
+    let message: string | undefined;
+    let time: number | undefined;
+
+    if (typeof optionsOrCallback === 'function') {
+      changeFn = optionsOrCallback;
+      message = undefined;
+    } else {
+      changeFn = callback!;
+      message = typeof optionsOrCallback === 'string' ? optionsOrCallback : optionsOrCallback?.message;
+      time = optionsOrCallback?.time;
+    }
+
+    // Create proxy for mutation
+    const proxy = createRootProxy(this);
+
+    try {
+      // Call user's change function with the proxy
+      changeFn(proxy);
+
+      // Commit pending operations if any were made
+      if (this.pendingOps() > 0) {
+        this.commit(message, time);
+      }
+    } catch (error) {
+      // Rollback any pending operations on error
+      if (this.pendingOps() > 0) {
+        this.rollback();
+      }
+      throw error;
+    }
+
+    return this;
+  }
+
+  // --- Lifecycle ---
+
   clone(actor?: string): NativeAutomerge {
     const forked = this.doc.fork() as Doc;
     if (actor) {
@@ -623,6 +671,22 @@ class NativeAutomerge {
       }
     }
     if (val === undefined || val === null) return undefined;
+
+    // Handle Text objects specially - read their string content instead of returning ObjId
+    if (val.tag === Value_Tags.Object) {
+      const inner = val.inner as { typ: ObjType; id: ObjId };
+      console.log('[useapi get] Object detected, typ:', inner.typ, 'ObjType.Text:', ObjType.Text);
+      if (inner.typ === ObjType.Text) {
+        const textObjId = objIdToStr(inner.id);
+        console.log('[useapi get] TEXT OBJECT DETECTED! Converting:', textObjId);
+        const textContent = heads && heads.length > 0
+          ? this.doc.textAt(strToObjId(textObjId), hexToHeads(heads))
+          : this.doc.text(strToObjId(textObjId));
+        console.log('[useapi get] Text content:', textContent);
+        return ['str', textContent];
+      }
+    }
+
     return genValueToFullValue(val);
   }
 
@@ -648,7 +712,21 @@ class NativeAutomerge {
         vals = this.doc.getAllInList(objId, BigInt(index));
       }
     }
-    return vals.map(genValueToFullValue);
+
+    // Handle Text objects specially - read their string content
+    return vals.map(val => {
+      if (val.tag === Value_Tags.Object) {
+        const inner = val.inner as { typ: ObjType; id: ObjId };
+        if (inner.typ === ObjType.Text) {
+          const textObjId = objIdToStr(inner.id);
+          const textContent = heads && heads.length > 0
+            ? this.doc.textAt(strToObjId(textObjId), hexToHeads(heads))
+            : this.doc.text(strToObjId(textObjId));
+          return ['str', textContent] as [string, any];
+        }
+      }
+      return genValueToFullValue(val);
+    });
   }
 
   // --- Query: keys, text, length ---
@@ -698,11 +776,11 @@ class NativeAutomerge {
 
   private _materializeObj(objId: ObjId, objStr: string, heads?: string[], meta?: any): any {
     const ot = this.doc.objectType(objId);
+    console.log('[_materializeObj] objStr:', objStr, 'objType:', ot, 'ObjType.Text:', ObjType.Text, 'ObjType.Map:', ObjType.Map, 'ObjType.List:', ObjType.List);
     if (ot === ObjType.Text) {
-      if (heads && heads.length > 0) {
-        return this.doc.textAt(objId, hexToHeads(heads));
-      }
-      return this.doc.text(objId);
+      const textContent = heads && heads.length > 0 ? this.doc.textAt(objId, hexToHeads(heads)) : this.doc.text(objId);
+      console.log('[_materializeObj] TEXT OBJECT! objStr:', objStr, 'content:', textContent);
+      return textContent;
     }
     if (ot === ObjType.Map) {
       const result: Record<string, any> = {};
@@ -723,7 +801,9 @@ class NativeAutomerge {
         if (val.tag === Value_Tags.Object) {
           const inner = val.inner as { typ: ObjType; id: ObjId };
           const childStr = objIdToStr(inner.id);
+          console.log('[_materializeObj Map] key:', key, 'is Object, typ:', inner.typ, 'id:', childStr, 'recursing...');
           result[key] = this._materializeObj(inner.id, childStr, heads, meta);
+          console.log('[_materializeObj Map] key:', key, 'result:', result[key]);
         } else {
           const inner = val.inner as { value: ScalarValue };
           result[key] = scalarValueToJS(inner.value);
@@ -1239,6 +1319,143 @@ const nativeApi = {
       version: '0.7.3',
     };
   },
+};
+
+// =============================================================================
+// WASM-compatible API — drop-in replacement for @automerge/automerge
+// =============================================================================
+
+// Helper to extract underlying NativeAutomerge from readable doc
+function unwrapDoc(doc: any): NativeAutomerge {
+  return doc.__doc__ || doc;
+}
+
+export const Automerge = {
+  // Factory methods
+  init: (options?: any) => {
+    const doc = nativeApi.create(options);
+    return createReadableDoc(doc);
+  },
+
+  from: (obj: any, options?: any) => {
+    const doc = nativeApi.create(options);
+    if (obj && typeof obj === 'object') {
+      doc.change((d: any) => Object.assign(d, obj));
+    }
+    return createReadableDoc(doc);
+  },
+
+  // Document mutation
+  change: (doc: any, optionsOrCallback: any, callback?: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    nativeDoc.change(optionsOrCallback, callback);
+    return createReadableDoc(nativeDoc);
+  },
+
+  // Clone/view operations
+  clone: (doc: any, options?: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    const cloned = nativeDoc.clone(options?.actor);
+    return createReadableDoc(cloned);
+  },
+
+  fork: (doc: any, options?: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    const forked = nativeDoc.fork(options?.actor);
+    return createReadableDoc(forked);
+  },
+
+  // Serialization
+  save: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.save();
+  },
+
+  saveIncremental: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.saveIncremental();
+  },
+
+  load: (data: Uint8Array, options?: any) => {
+    const doc = nativeApi.load(data, options);
+    return createReadableDoc(doc);
+  },
+
+  loadIncremental: (doc: any, data: Uint8Array) => {
+    const nativeDoc = unwrapDoc(doc);
+    nativeDoc.loadIncremental(data);
+    return createReadableDoc(nativeDoc);
+  },
+
+  // Change management
+  getLastLocalChange: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.getLastLocalChange();
+  },
+
+  getHeads: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.getHeads();
+  },
+
+  getChanges: (oldDoc: any, newDoc: any) => {
+    const nativeOldDoc = unwrapDoc(oldDoc);
+    const nativeNewDoc = unwrapDoc(newDoc);
+    return nativeOldDoc.getChangesAdded(nativeNewDoc);
+  },
+
+  applyChanges: (doc: any, changes: Uint8Array[]) => {
+    const nativeDoc = unwrapDoc(doc);
+    nativeDoc.applyChanges(changes);
+    return [createReadableDoc(nativeDoc)]; // WASM API returns [doc] array
+  },
+
+  // Metadata
+  getActorId: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.getActorId();
+  },
+
+  // Utility
+  merge: (local: any, remote: any) => {
+    const nativeLocal = unwrapDoc(local);
+    const nativeRemote = unwrapDoc(remote);
+    nativeLocal.merge(nativeRemote);
+    return createReadableDoc(nativeLocal);
+  },
+
+  // Read document contents
+  toJS: (doc: any) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.toJS();
+  },
+
+  materialize: (doc: any, obj?: string, heads?: string[]) => {
+    const nativeDoc = unwrapDoc(doc);
+    return nativeDoc.materialize(obj, heads);
+  },
+
+  // Decode change bytes
+  decodeChange: (data: Uint8Array) => nativeApi.decodeChange(data),
+
+  // Sync state management
+  initSyncState: () => nativeApi.initSyncState(),
+
+  generateSyncMessage: (doc: any, syncState: NativeSyncState) => {
+    const nativeDoc = unwrapDoc(doc);
+    const msg = nativeDoc.generateSyncMessage(syncState);
+    return [syncState, msg];
+  },
+
+  receiveSyncMessage: (doc: any, syncState: NativeSyncState, message: Uint8Array) => {
+    const nativeDoc = unwrapDoc(doc);
+    nativeDoc.receiveSyncMessage(syncState, message);
+    return [createReadableDoc(nativeDoc), syncState, null];
+  },
+
+  encodeSyncState: (state: NativeSyncState) => nativeApi.encodeSyncState(state),
+
+  decodeSyncState: (data: Uint8Array) => nativeApi.decodeSyncState(data),
 };
 
 export { nativeApi, NativeAutomerge, NativeSyncState };
